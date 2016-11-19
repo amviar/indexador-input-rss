@@ -1,0 +1,6 @@
+development:
+  clients:
+    default:
+      database: indexador-input-rss
+      hosts:
+        - localhost:27017

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel='stylesheet' type='text/css' href='/css/main.css' />
+  <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha256-/SIrNqv8h6QGKDuNoLGA4iret+kyesCkHGzVUUV0shc=" crossorigin="anonymous"></script>
+  <script type='text/javascript' src='/js/main.js' ></script>
+  <title>Indexador - Input RSS</title>
+</head>
+<body>
+  <% if flash[:notice] %>
+    <div class='flash-notice'>
+    <%= flash[:alert] %>
+    </div>
+  <% elsif flash[:alert] %>
+    <div class='flash-alert'>
+    <%= flash[:alert] %>
+    </div>
+  <% end %>
+
+  <div>
+    <h2>Nuevo Feed</h2>
+    <form action='/feeds' method='post' >
+      <div>
+        <label for='feed[name]'>Nombre</label>
+        <input type='text' name='feed[name]'>
+      </div>
+      <div>
+        <label for='feed[url]'>URL</label>
+        <input type='text' name='feed[url]' />
+      </div>
+
+      <input type='submit' value='Crear' />
+    </form>
+  </div>
+
+  <div>
+    <h2>Feeds existentes</h2>
+
+    <table class='feeds-table'>
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>URL</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @feeds.each do |feed| %>
+          <tr>
+            <td><%= feed.name %></td>
+            <td><%= feed.url %></td>
+            <td>
+              <form action='/feeds' method='delete'>
+                <input type='hidden' name='feed[slug]' value='<%= feed.slug %>' />
+                <input type='submit' value='Borrar' />
+              </form>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</body>
+</html>
+

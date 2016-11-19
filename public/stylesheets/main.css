@@ -1,0 +1,15 @@
+.flash-notice {
+  background-color: green;
+  color: white;
+  width: 100%;
+}
+
+.flash-alert {
+  background-color: red;
+  color: white;
+  width: 100%;
+}
+
+.feeds-table td, .feeds-table th {
+  padding: 4px 8px;
+}
