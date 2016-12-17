@@ -3,6 +3,7 @@ require 'bundler'
 
 Bundler.require(:default, :test)
 ENV['RACK_ENV'] = 'test'
+Dotenv.load ".env.#{ENV['RACK_ENV']}", '.env'
 
 Mongoid.load!("mongoid.yml")
 

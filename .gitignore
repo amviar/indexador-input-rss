@@ -1,1 +1,4 @@
 .byebug_history
+.env*
+!.env.sample
+.bundle

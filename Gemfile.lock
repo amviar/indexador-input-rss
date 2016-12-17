@@ -14,6 +14,7 @@ GEM
     concurrent-ruby (1.0.2)
     database_cleaner (1.5.3)
     diff-lcs (1.2.5)
+    dotenv (2.1.1)
     faraday (0.10.0)
       multipart-post (>= 1.2, < 3)
     faraday_middleware (0.10.1)
@@ -78,6 +79,7 @@ PLATFORMS
 
 DEPENDENCIES
   database_cleaner
+  dotenv
   feedjira
   mongoid
   pry-byebug
