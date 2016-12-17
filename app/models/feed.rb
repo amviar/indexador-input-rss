@@ -8,7 +8,7 @@ class Feed
   field :slug, type: String
   field :last_fetch_at, type: DateTime
 
-  before_create :calculate_slug
+  before_validation :calculate_slug, if: -> { self.slug.blank? }
 
   validates :slug, uniqueness: true
   validates :url, uniqueness: true
@@ -29,11 +29,11 @@ class Feed
   private
 
   def calculate_slug
-    name_slug = name.downcase.gsub(/\w/, '-')
+    name_slug = name.downcase.gsub(/\s/, '-')
     self.slug = name_slug
 
     i = 1
-    while Feed.where(slug: proposed_slug).any?
+    while Feed.where(slug: name_slug).any?
       self.slug = "#{name_slug}-#{i}"
       i += 1
     end
