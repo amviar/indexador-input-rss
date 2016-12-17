@@ -1,8 +1,12 @@
 source "https://rubygems.org"
 
+gem 'rake'
+
 gem 'sinatra'
 gem 'rack-flash3', require: 'rack-flash'
 gem 'dotenv'
+
+gem 'whenever', require: false
 
 gem 'mongoid'
 

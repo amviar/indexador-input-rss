@@ -1,5 +1,3 @@
-require 'models/feed'
-
 class Main < Sinatra::Base
   enable :sessions
   use Rack::Flash
@@ -32,12 +30,5 @@ class Main < Sinatra::Base
 
     @feeds = Feed.all
     erb :index
-  end
-
-  get '/feeds/fetch' do
-    # TODO: solo para desarrollo, mover a un cron
-    Feed.each do |feed|
-      feed.fetch_and_publish_new
-    end
   end
 end
