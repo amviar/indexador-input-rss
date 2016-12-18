@@ -1,0 +1,33 @@
+<h2>Feeds existentes</h2>
+
+<table class='feeds-table'>
+  <thead>
+    <tr>
+      <th>Nombre</th>
+      <th>URL</th>
+      <th>Última actualización</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% feeds.each do |feed| %>
+      <tr>
+        <td><%= feed.name %></td>
+        <td><%= feed.url %></td>
+        <td>
+          <% if feed.last_fetch_at.present? %>
+            <%= feed.last_fetch_at %>
+          <% else %>
+            Pendiente
+          <% end %>
+        </td>
+        <td>
+          <form action='/feeds' method='delete'>
+            <input type='hidden' name='feed[slug]' value='<%= feed.slug %>' />
+            <input type='submit' value='Borrar' />
+          </form>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

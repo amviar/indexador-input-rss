@@ -4,9 +4,12 @@ $(document).ready(function() {
     jQuery.ajax({
       url: $(this).attr('action'),
       type: 'DELETE',
-      dataType: 'json',
+      dataType: 'script',
       data: {
         slug: $(this).children('input[name="feed[slug]"]').val()
+      },
+      success: function(resp) {
+        eval(resp);
       }
     });
   });

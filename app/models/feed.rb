@@ -33,7 +33,7 @@ class Feed
   private
 
   def calculate_slug
-    name_slug = name.downcase.gsub(/\s/, '-')
+    name_slug = name.downcase.gsub(/\s/, '-').gsub(/[^a-zA-Z0-9]/, '-')
     self.slug = name_slug
 
     i = 1

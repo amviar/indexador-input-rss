@@ -1,4 +1,8 @@
+require_relative 'helpers/javascript_helper'
+
 class Main < Sinatra::Base
+  include JavascriptHelper
+
   enable :sessions
   use Rack::Flash
 
@@ -16,8 +20,7 @@ class Main < Sinatra::Base
       flash[:alert] = "Error al guardar el feed: #{feed.errors}"
     end
 
-    @feeds = Feed.all
-    erb :index
+    redirect '/'
   end
 
   delete '/feeds' do
@@ -29,6 +32,7 @@ class Main < Sinatra::Base
     end
 
     @feeds = Feed.all
-    erb :index
+
+    erb :delete_success, content_type: 'application/javascript'
   end
 end
