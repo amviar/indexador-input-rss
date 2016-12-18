@@ -1,12 +1,4 @@
 #!/usr/bin/env rake
-# Add your own tasks in files placed in lib/tasks ending in .rake,
-
-# require File.expand_path('../config/application', __FILE__)
-
-# Agra::Application.load_tasks
-
-# task :default => ['spec', 'scenarios']
-# Knapsack.load_tasks if defined?(Knapsack)
 
 require 'rspec/core/rake_task'
 
@@ -22,7 +14,6 @@ RSpec::Core::RakeTask.new do |t|
 end
 
 require_relative 'config/environment'
-
 
 namespace :indexador_input_rss do
   desc 'Descargar nuevos contenidos de todos los feeds RSS y publicarlos en el Indexador'
