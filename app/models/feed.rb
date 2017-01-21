@@ -44,7 +44,7 @@ class Feed
   end
 
   def indexador_hostname
-    raise 'Configuración inválida, falta definir INDEXADOR_URL' unless ENV['INDEXADOR_HOST'].present?
+    raise 'Configuración inválida, falta definir INDEXADOR_HOST' unless ENV['INDEXADOR_HOST'].present?
     ENV['INDEXADOR_HOST']
   end
 
