@@ -43,6 +43,7 @@ describe Feed do
   end
 
   describe '#fetch_and_publish_new!' do
+    let(:indexador_scheme) { 'https' }
     let(:indexador_host) { 'indexador.amviar.org.ar' }
     let(:indexador_port) { '443' }
 
@@ -55,49 +56,60 @@ describe Feed do
       ]
     end
 
+    let(:client_id) { 'a-client-id' }
+    let(:secret) { 'a-secret' }
+    let(:oauth_client) { double }
+    let(:access_token) { double }
+
     subject { Feed.new(url: url, name: 'Feed RSS') }
 
     before :each do
       allow(Feedjira::Feed).to receive(:fetch_and_parse).with(url).and_return(rss_feed)
+      allow(OAuth2::Client).to receive(:new).with(client_id, secret, site: "#{indexador_scheme}://#{indexador_host}:#{indexador_port}", token_method: :post)
+                           .and_return(oauth_client)
+      allow(oauth_client).to receive(:client_credentials).and_return(double(get_token: access_token))
     end
 
     around :each do |example|
+      previous_indexador_scheme = ENV['INDEXADOR_SCHEME']
       previous_indexador_host = ENV['INDEXADOR_HOST']
       previous_indexador_port = ENV['INDEXADOR_PORT']
+      previous_indexador_client_id = ENV['INDEXADOR_CLIENT_ID']
+      previous_indexador_secret = ENV['INDEXADOR_SECRET']
 
+      ENV['INDEXADOR_SCHEME'] = indexador_scheme
       ENV['INDEXADOR_HOST'] = indexador_host
       ENV['INDEXADOR_PORT'] = indexador_port
+      ENV['INDEXADOR_CLIENT_ID'] = client_id
+      ENV['INDEXADOR_SECRET'] = secret
 
       example.run
 
       ENV['INDEXADOR_HOST'] = previous_indexador_host
       ENV['INDEXADOR_PORT'] = previous_indexador_port
+      ENV['INDEXADOR_SCHEME'] = previous_indexador_scheme
+      ENV['INDEXADOR_CLIENT_ID'] = previous_indexador_client_id
+      ENV['INDEXADOR_SECRET'] = previous_indexador_secret
     end
 
     context 'last_fetch_at is nil' do
-      it 'should call new content endpoint on Indexador for each entry' do
-        req = double
-        allow(Net::HTTP::Post).to receive(:new).and_return(req)
+      before :each do
         rss_entries.each do |entry|
-          expect(req).to receive(:body=).with({title: entry.title, body: entry.content, url: entry.url, creator: entry.author, published_at: entry.published, source: 'rss'}.to_json)
+          expect(access_token).to receive(:post)
+                              .with('/api/v1/contents.json',
+                                    headers: {'Content-Type' => 'application/json'},
+                                    body: {title: entry.title, body: entry.content, url: entry.url, creator: entry.author, published_at: entry.published, source: 'rss'}.to_json,
+                                    raise_errors: false
+                              )
+                              .and_return(double(status: 201))
         end
-        http_client = double
-        expect(Net::HTTP).to receive(:start).twice.with(indexador_host, indexador_port).and_yield(http_client).and_return(double)
-        expect(http_client).to receive(:request).twice.with(req)
+      end
 
+      it 'should call new content endpoint on Indexador for each entry' do
         subject.fetch_and_publish_new!
       end
 
       it 'should update last_fetch_at' do
-        req = double
-        allow(Net::HTTP::Post).to receive(:new).and_return(req)
-        rss_entries.each do |entry|
-          expect(req).to receive(:body=).with({title: entry.title, body: entry.content, url: entry.url, creator: entry.author, published_at: entry.published, source: 'rss'}.to_json)
-        end
-        http_client = double
-        expect(Net::HTTP).to receive(:start).twice.with(indexador_host, indexador_port).and_yield(http_client).and_return(double)
-        expect(http_client).to receive(:request).twice.with(req)
-
         Timecop.freeze(now = DateTime.now - 10.minutes) do
           subject.fetch_and_publish_new!
         end
@@ -113,12 +125,13 @@ describe Feed do
       end
 
       it 'should not send old content to Indexador' do
-        req = double
-        allow(Net::HTTP::Post).to receive(:new).and_return(req)
-        expect(req).to receive(:body=).with({title: rss_entries.last.title, body: rss_entries.last.content, url: rss_entries.last.url, creator: rss_entries.last.author, published_at: rss_entries.last.published, source: 'rss'}.to_json)
-        http_client = double
-        expect(Net::HTTP).to receive(:start).with(indexador_host, indexador_port).and_yield(http_client).and_return(double)
-        expect(http_client).to receive(:request).with(req)
+        expect(access_token).to receive(:post)
+                              .with('/api/v1/contents.json',
+                                    headers: {'Content-Type' => 'application/json'},
+                                    body: {title: rss_entries.last.title, body: rss_entries.last.content, url: rss_entries.last.url, creator: rss_entries.last.author, published_at: rss_entries.last.published, source: 'rss'}.to_json,
+                                    raise_errors: false
+                              )
+                              .and_return(double(status: 201))
 
         subject.fetch_and_publish_new!
       end

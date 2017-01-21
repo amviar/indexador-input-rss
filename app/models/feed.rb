@@ -19,14 +19,13 @@ class Feed
     rss_feed.entries.each do |entry|
       next if !last_fetch_at.nil? && entry.last_modified < last_fetch_at
 
-      req = Net::HTTP::Post.new('/api/v1/contents.json', 'Content-Type' => 'application/json')
-      req.body = { title: entry.title, body: entry.content, url: entry.url, creator: entry.author, published_at: entry.published, source: 'rss' }.to_json
+      res = access_token.post('/api/v1/contents.json',
+                        headers: {'Content-Type' => 'application/json'},
+                        body: { title: entry.title, body: entry.content, url: entry.url, creator: entry.author, published_at: entry.published, source: 'rss' }.to_json,
+                        raise_errors: false
+      )
 
-      res = Net::HTTP.start(indexador_hostname, indexador_port) do |http|
-        http.request(req)
-      end
-
-      case res.code.to_i
+      case res.status
       when 200..299
         logger.info "Contenido '#{entry.title}' de '#{self.name}' insertado exitosamente en el Indexador"
       else
@@ -58,5 +57,25 @@ class Feed
 
   def indexador_port
     ENV['INDEXADOR_PORT'] || 443
+  end
+
+  def access_token
+    @_access_token ||= oauth2_client.client_credentials.get_token
+  end
+
+  def oauth2_client
+    return @_oauth2_client unless @_oauth2_client.nil?
+
+    uri_indexador = "#{ENV['INDEXADOR_SCHEME']}://#{ENV['INDEXADOR_HOST']}"
+    if !ENV['INDEXADOR_PORT'].nil? && ENV['INDEXADOR_PORT'] != ''
+      uri_indexador += ":#{ENV['INDEXADOR_PORT']}"
+    end
+
+    @_oauth2_client = OAuth2::Client.new(
+      ENV['INDEXADOR_CLIENT_ID'],
+      ENV['INDEXADOR_SECRET'],
+      site: uri_indexador,
+      token_method: :post
+    )
   end
 end

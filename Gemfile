@@ -4,7 +4,6 @@ gem 'rake'
 
 gem 'sinatra'
 gem 'rack-flash3', require: 'rack-flash'
-gem 'rerun', require: false
 
 gem 'dotenv'
 
@@ -14,8 +13,11 @@ gem 'mongoid'
 
 gem 'feedjira'
 
+gem 'oauth2'
+
 group :development, :test do
   gem 'pry-byebug'
+  gem 'rerun', require: false
 end
 
 group :test do
