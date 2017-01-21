@@ -5,6 +5,7 @@ class Main < Sinatra::Base
 
   enable :sessions
   use Rack::Flash
+  set :logging, true
 
   get '/' do
     @feeds = Feed.all

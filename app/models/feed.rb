@@ -21,8 +21,16 @@ class Feed
 
       req = Net::HTTP::Post.new('/api/v1/contents.json', 'Content-Type' => 'application/json')
       req.body = { title: entry.title, body: entry.content, url: entry.url, creator: entry.author, published_at: entry.published, source: 'rss' }.to_json
+
       res = Net::HTTP.start(indexador_hostname, indexador_port) do |http|
         http.request(req)
+      end
+
+      case res.code.to_i
+      when 200..299
+        logger.info "Contenido '#{entry.title}' de '#{self.name}' insertado exitosamente en el Indexador"
+      else
+        raise "Error al intentar insertar contenido '#{entry.title}' de '#{self.name}' al indexador. HTTP Response: #{res.inspect}."
       end
     end
 
