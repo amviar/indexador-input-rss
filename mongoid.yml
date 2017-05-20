@@ -1,9 +1,9 @@
 development:
   clients:
     default:
-      database: indexador-input-rss
+      database: <%= ENV['MONGODB_DATABASE'] || 'indexador-input-rss_dev' %>
       hosts:
-        - localhost:27017
+        - <%= ENV['MONGODB_HOST'] %>
 test:
   clients:
     default:
@@ -14,3 +14,16 @@ test:
         read:
           mode: :primary
         max_pool_size: 1
+
+staging:
+  clients:
+    default:
+      database: indexador-input-rss_staging
+      hosts:
+        - <%= ENV['MONGODB_HOST'] %>
+production:
+  clients:
+    default:
+      database: indexador-input-rss_production
+      hosts:
+        - <%= ENV['MONGODB_HOST'] %>

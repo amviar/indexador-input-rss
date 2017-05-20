@@ -1,11 +1,11 @@
 source "https://rubygems.org"
 
+gem 'dotenv'
 gem 'rake'
 
 gem 'sinatra'
 gem 'rack-flash3', require: 'rack-flash'
 
-gem 'dotenv'
 
 gem 'whenever', require: false
 

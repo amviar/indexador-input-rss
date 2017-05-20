@@ -1,16 +1,15 @@
 #!/usr/bin/env rake
+if ENV['RACK_ENV'] == 'test'
+  require 'rspec/core/rake_task'
 
-require 'rspec/core/rake_task'
+  desc 'Default: run specs.'
+  task :default => :spec
 
-desc 'Default: run specs.'
-task :default => :spec
-
-desc "Run specs"
-RSpec::Core::RakeTask.new do |t|
-  ENV['RACK_ENV'] = 'test'
-
-  t.pattern = "./spec/**/*_spec.rb" # don't need this, it's default.
-  t.rspec_opts = '--color'
+  desc "Run specs"
+  RSpec::Core::RakeTask.new do |t|
+    t.pattern = "./spec/**/*_spec.rb" # don't need this, it's default.
+    t.rspec_opts = '--color'
+  end
 end
 
 require_relative 'config/environment'

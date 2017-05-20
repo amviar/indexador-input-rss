@@ -1,0 +1,9 @@
+.git
+doc
+log
+test
+tmp
+.byebug_history
+.ruby*
+README.md
+.env*
